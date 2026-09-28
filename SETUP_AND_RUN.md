@@ -235,20 +235,19 @@ behave features/Schema_validation.feature
 
 ---
 
-## 7. Test Scenarios Covered
+## 7. Test Suites & Features Covered
 
-The test suite validates target data warehouse schema integrity:
+The test framework covers 7 core verification areas:
 
-| # | Scenario | Description |
+| Feature File | Primary Tag | Validation Objective |
 |---|---|---|
-| 1 | Target Tables Existence | Verifies all required tables defined in `expected_schema.json` exist in the target database. |
-| 2 | `DIM_BRANCH` Columns | Verifies mandatory columns: `BRANCH_SK`, `BRANCH_CODE`, `BRANCH_NAME`, `REGION`, `SWIFT_BIC`. |
-| 3 | `DIM_CUSTOMER` Columns | Verifies mandatory columns: `CUSTOMER_SK`, `CUSTOMER_ID`, `FULL_NAME`, `MASKED_TAX_ID`, `STATUS`, `KYC_STATUS`, `START_DATE`, `IS_CURRENT`. |
-| 4 | `DIM_ACCOUNT` Columns | Verifies mandatory columns: `ACCOUNT_SK`, `ACCOUNT_NUMBER`, `CUSTOMER_SK`, `BRANCH_SK`, `ACCOUNT_TYPE`, `CURRENCY_CODE`, `CURRENT_BALANCE`, `STATUS`. |
-| 5 | `FACT_LOAN_PORTFOLIO` Columns | Verifies mandatory columns: `LOAN_SK`, `LOAN_ID`, `ACCOUNT_SK`, `CUSTOMER_SK`, `PRINCIPAL_AMOUNT`, `OUTSTANDING_BALANCE`, `DELINQUENCY_STATUS`. |
-| 6 | `FACT_TRANSACTIONS` Columns | Verifies mandatory columns: `TXN_SK`, `TXN_ID`, `ACCOUNT_SK`, `TXN_TIMESTAMP`, `TXN_TYPE`, `CHANNEL`, `AMOUNT`, `BALANCE_AFTER_TXN`, `AML_FLAG`. |
-| 7 | `DAILY_BALANCE_SUMMARY` Columns | Verifies mandatory columns: `SUMMARY_SK`, `SNAPSHOT_DATE`, `ACCOUNT_SK`, `OPENING_BALANCE`, `TOTAL_DEBIT_AMOUNT`, `TOTAL_CREDIT_AMOUNT`, `CLOSING_BALANCE`, `RECONCILIATION_STATUS`. |
-| 8 | `ETL_REJECTED_RECORDS` Columns | Verifies quarantine columns: `REJECT_ID`, `SOURCE_TABLE`, `SOURCE_RECORD_KEY`, `REJECT_REASON`, `RAW_RECORD_PAYLOAD`. |
+| `01_schema_structure_validation.feature` | `@schema` | Validates target tables exist, required column definitions match schema JSON, and mandatory NOT NULL constraints. |
+| `02_data_completeness_reconciliation.feature` | `@reconciliation` | Source vs Target record parity, zero row loss during migration, and completeness threshold checks. |
+| `03_data_integrity_and_keys.feature` | `@integrity` | Natural key uniqueness, surrogate key generation, and relational foreign key integrity across tables. |
+| `04_transformations_and_pii_masking.feature` | `@transformation`, `@pii` | Status & account type mapping from Excel rules, and SSN/Tax ID PII data masking (`***-**-XXXX`). |
+| `05_financial_balance_reconciliation.feature` | `@financial` | Financial ledger equation: `OPENING_BALANCE + CREDIT - DEBIT = CLOSING_BALANCE` and debit/credit volume parity within tolerance. |
+| `06_dirty_data_quarantine.feature` | `@quarantine` | Quarantine segregation in `ETL_REJECTED_RECORDS` with zero data leakage into production tables. |
+| `07_kafka_streaming_validation.feature` | `@kafka` | Real-time streaming transaction ingestion SLA (<30s) and AML threshold flag validation (>=$10,000). |
 
 ---
 

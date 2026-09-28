@@ -15,6 +15,7 @@ def before_all(context):
 
     context.expected_schema = ExternalDataReader.read_json_schema("expected_schema.json")
     context.threshold_mapping = ExternalDataReader.Read_csv_threshold("validation_thresholds.csv")
+    context.thresholds = context.threshold_mapping
     context.act_tables = []
 
     logger.info(f"Connected to Target DB: {context.target_engine.url}")
