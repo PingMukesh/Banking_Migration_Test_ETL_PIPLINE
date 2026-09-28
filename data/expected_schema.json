@@ -1,0 +1,94 @@
+{
+  "tables": {
+    "DIM_BRANCH": {
+      "primary_key": "BRANCH_SK",
+      "natural_key": "BRANCH_CODE",
+      "required_columns": [
+        "BRANCH_SK",
+        "BRANCH_CODE",
+        "BRANCH_NAME",
+        "REGION",
+        "SWIFT_BIC"
+      ]
+    },
+    "DIM_CUSTOMER": {
+      "primary_key": "CUSTOMER_SK",
+      "natural_key": "CUSTOMER_ID",
+      "required_columns": [
+        "CUSTOMER_SK",
+        "CUSTOMER_ID",
+        "FULL_NAME",
+        "MASKED_TAX_ID",
+        "STATUS",
+        "KYC_STATUS",
+        "START_DATE",
+        "IS_CURRENT"
+      ]
+    },
+    "DIM_ACCOUNT": {
+      "primary_key": "ACCOUNT_SK",
+      "natural_key": "ACCOUNT_NUMBER",
+      "required_columns": [
+        "ACCOUNT_SK",
+        "ACCOUNT_NUMBER",
+        "CUSTOMER_SK",
+        "BRANCH_SK",
+        "ACCOUNT_TYPE",
+        "CURRENCY_CODE",
+        "CURRENT_BALANCE",
+        "STATUS"
+      ]
+    },
+    "FACT_TRANSACTIONS": {
+      "primary_key": "TXN_SK",
+      "natural_key": "TXN_ID",
+      "required_columns": [
+        "TXN_SK",
+        "TXN_ID",
+        "ACCOUNT_SK",
+        "TXN_TIMESTAMP",
+        "TXN_TYPE",
+        "CHANNEL",
+        "AMOUNT",
+        "BALANCE_AFTER_TXN",
+        "AML_FLAG"
+      ]
+    },
+    "FACT_LOAN_PORTFOLIO": {
+      "primary_key": "LOAN_SK",
+      "natural_key": "LOAN_ID",
+      "required_columns": [
+        "LOAN_SK",
+        "LOAN_ID",
+        "ACCOUNT_SK",
+        "CUSTOMER_SK",
+        "PRINCIPAL_AMOUNT",
+        "OUTSTANDING_BALANCE",
+        "DELINQUENCY_STATUS"
+      ]
+    },
+    "DAILY_BALANCE_SUMMARY": {
+      "primary_key": "SUMMARY_SK",
+      "required_columns": [
+        "SUMMARY_SK",
+        "SNAPSHOT_DATE",
+        "ACCOUNT_SK",
+        "OPENING_BALANCE",
+        "TOTAL_DEBIT_AMOUNT",
+        "TOTAL_CREDIT_AMOUNT",
+        "CLOSING_BALANCE",
+        "RECONCILIATION_STATUS"
+      ]
+    },
+    "ETL_REJECTED_RECORDS": {
+      "primary_key": "REJECT_ID",
+      "required_columns": [
+        "REJECT_ID",
+        "SOURCE_TABLE",
+        "SOURCE_RECORD_KEY",
+        "REJECT_REASON",
+        "RAW_RECORD_PAYLOAD"
+      ]
+    }
+  }
+}
