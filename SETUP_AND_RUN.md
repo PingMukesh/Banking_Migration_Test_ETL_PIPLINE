@@ -143,6 +143,32 @@ If you have a native Oracle Database (such as Oracle 23ai Free or Oracle 21c XE)
 
 ---
 
+### Option C: Native Localhost MySQL Setup (Optional)
+
+If you have a native MySQL Community Server installed directly on your localhost:
+
+1. Connect to MySQL via terminal or MySQL Workbench:
+   ```bash
+   mysql -u root -p < scripts/mysql_schema_setup.sql
+   ```
+   Or inside the MySQL CLI:
+   ```sql
+   source scripts/mysql_schema_setup.sql;
+   ```
+2. Update `config/config.ini` with your local MySQL password:
+   ```ini
+   [DATABASE.SOURCE]
+   host = localhost
+   port = 3306
+   database = legacy_banking
+   username = root
+   password = YourPassword
+   driver = mysql+pymysql
+   fallback_sqlite = data/source_fallback.db
+   ```
+
+---
+
 ## 5. Configuration Settings
 
 The configuration file is located at `config/config.ini`:
@@ -269,6 +295,7 @@ Banking_Migration_Test_ETL_PIPLINE/
 │       └── bb_test_execution.log    # Execution log output
 │
 ├── scripts/
+│   ├── mysql_schema_setup.sql       # Native MySQL legacy source DDL creation script
 │   ├── oracle_schema_setup.sql      # Native Oracle DDL creation script
 │   └── setup_local_sqlite.py        # Local SQLite database setup & seeder
 │
