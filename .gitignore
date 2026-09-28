@@ -48,7 +48,6 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Logs and test outputs
+# Logs
 reports/logs/*.log
 !reports/logs/.gitkeep
-*.output
