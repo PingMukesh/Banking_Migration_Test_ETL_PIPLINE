@@ -193,6 +193,16 @@ def setup_target_database():
         accounts,
     )
 
+    # Keep local parity fixtures before the cleanup hook's 2023 cutoff.
+    transactions = [
+        ("TXN-LOCAL-001", 1, "2022-12-31 10:15:00", "CREDIT", "NET", 1500.00, 15400.50, "N", "SUCCESS", now_str),
+        ("TXN-LOCAL-002", 2, "2022-12-31 14:30:00", "DEBIT", "ATM", 200.00, 4200.00, "N", "SUCCESS", now_str),
+    ]
+    cur.executemany(
+        "INSERT INTO FACT_TRANSACTIONS (TXN_ID, ACCOUNT_SK, TXN_TIMESTAMP, TXN_TYPE, CHANNEL, AMOUNT, BALANCE_AFTER_TXN, AML_FLAG, TXN_STATUS, DW_INSERT_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        transactions,
+    )
+
     # Fact Loan Portfolio
     loans = [
         ("LN9001", 1, 1, "MORTGAGE", 250000.00, 210000.00, 4.5, 1266.71, 360, "2020-02-01", "CURRENT", now_str),
@@ -244,6 +254,7 @@ def setup_source_database():
     """)
 
     cur.execute("DROP TABLE IF EXISTS source_accounts")
+    cur.execute("DROP TABLE IF EXISTS legacy_transactions")
     cur.execute("""
     CREATE TABLE source_accounts (
         acct_no TEXT PRIMARY KEY,
@@ -254,10 +265,30 @@ def setup_source_database():
     )
     """)
 
+    cur.execute("""
+    CREATE TABLE legacy_transactions (
+        txn_id TEXT PRIMARY KEY,
+        acct_no TEXT NOT NULL,
+        txn_time TEXT NOT NULL,
+        txn_type TEXT NOT NULL,
+        channel TEXT NOT NULL,
+        amount REAL NOT NULL,
+        balance_after REAL NOT NULL,
+        status TEXT NOT NULL
+    )
+    """)
+
     cur.execute("INSERT INTO source_customers VALUES (101, 'Alice Morgan', '999-11-4581', 'A', '2020-01-15')")
     cur.execute("INSERT INTO source_customers VALUES (102, 'Bob Vance', '999-22-9231', 'A', '2019-06-10')")
     cur.execute("INSERT INTO source_accounts VALUES ('ACC10001', 101, 'SAVINGS', 15400.50, 'OPEN')")
     cur.execute("INSERT INTO source_accounts VALUES ('ACC10002', 101, 'CHECKING', 4200.00, 'OPEN')")
+    cur.executemany(
+        "INSERT INTO legacy_transactions VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+            ("TXN-LOCAL-001", "ACC10001", "2022-12-31 10:15:00", "CREDIT", "NET", 1500.00, 15400.50, "SUCCESS"),
+            ("TXN-LOCAL-002", "ACC10002", "2022-12-31 14:30:00", "DEBIT", "ATM", 200.00, 4200.00, "SUCCESS"),
+        ],
+    )
 
     conn.commit()
     conn.close()
